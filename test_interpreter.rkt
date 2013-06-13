@@ -32,3 +32,11 @@
    (check-equal? (interp '(plus (num 3) (var b)) '((a . (num 3)) (b . (num 4)))) 7)))
 
 (run-tests var-tests)
+
+(define func-tests
+  (test-suite
+   "testing the addition of functions as a value"
+   (check-equal? (interp '(app (func x (var x)) (num 5)) '()) 5)
+   (check-equal? (interp '(app (app (func x (func y (plus (var x) (var y)))) (num 5)) (num 6)) '()) 11)
+   ))
+(run-tests func-tests)
