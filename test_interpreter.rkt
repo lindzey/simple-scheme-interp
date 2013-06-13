@@ -17,9 +17,18 @@
 (define op-tests
   (test-suite 
    "tests of plus, minus, times"
-   (check-equal? (interp expr1) ans1 "plus only")
-   (check-equal? (interp expr2) ans2 "minus only")
-   (check-equal? (interp expr3) ans3 "minus/plus nested")
-   (check-equal? (interp expr4) ans4 "times only")))
+   (check-equal? (interp expr1 '()) ans1 "plus only")
+   (check-equal? (interp expr2 '()) ans2 "minus only")
+   (check-equal? (interp expr3 '()) ans3 "minus/plus nested")
+   (check-equal? (interp expr4 '()) ans4 "times only")))
 
 (run-tests op-tests)
+
+
+(define var-tests
+  (test-suite
+   "testing simple variable substitution"
+   (check-equal? (interp '(plus (num 3) (var a)) '((a . (num 3)) (b . (num 4)))) 6)
+   (check-equal? (interp '(plus (num 3) (var b)) '((a . (num 3)) (b . (num 4)))) 7)))
+
+(run-tests var-tests)
