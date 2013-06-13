@@ -28,8 +28,8 @@
 (define var-tests
   (test-suite
    "testing simple variable substitution"
-   (check-equal? (interp '(plus (num 3) (var a)) '((a . (num 3)) (b . (num 4)))) 6)
-   (check-equal? (interp '(plus (num 3) (var b)) '((a . (num 3)) (b . (num 4)))) 7)))
+   (check-equal? (interp '(plus (num 3) (var a)) '((a . 3) (b . 4))) 6)
+   (check-equal? (interp '(plus (num 3) (var b)) '((a . 3) (b . 4))) 7)))
 
 (run-tests var-tests)
 
@@ -37,6 +37,12 @@
   (test-suite
    "testing the addition of functions as a value"
    (check-equal? (interp '(app (func x (var x)) (num 5)) '()) 5)
-   (check-equal? (interp '(app (app (func x (func y (plus (var x) (var y)))) (num 5)) (num 6)) '()) 11)
+   (check-equal? (interp '(app 
+                           (app 
+                            (func x (func y (plus (var x) (var y)))) 
+                            (num 5)) 
+                           (num 6)) 
+                         '())
+                 11)
    ))
 (run-tests func-tests)

@@ -7,6 +7,7 @@
 ;;        '(app e e) 
 
 (require racket/match)
+(require racket/trace)
 
 (provide interp)
 
@@ -14,13 +15,13 @@
 ;; element in each pair is the var's name, and the 2nd is it's value
 (define (interp expr vars)
   (match expr
-    [(list 'var x) (interp (lookup-var x vars) vars)]
+    [(list 'var x) (lookup-var x vars)]
     [(list 'num n) n]
     ;; f-interp will be 'func, no idea what a is
     [(list 'app f a) (let ((f-interp (interp f vars))
                            (a-interp (interp a vars)))
                        (apply-func f-interp a-interp vars))]
-    [(list 'func x e) (list 'func x e)]
+    [(list 'func x e) (list 'closure x e vars)]
     [(list 'plus e1 e2) (+ (interp e1 vars) (interp e2 vars))]
     [(list 'minus e1 e2) (- (interp e1 vars) (interp e2 vars))]
     [(list 'times e1 e2) (* (interp e1 vars) (interp e2 vars))]
@@ -28,7 +29,7 @@
 
 (define (apply-func f a vars)
   (match f
-    [(list 'func var expr) (interp expr (add-var vars var a ))]
+    [(list 'closure var expr c-vars) (interp expr (add-var c-vars var a ))]
     [_ ((error "apply-func: Invalid function"))]))
 
 (define (add-var vars x val)
@@ -37,7 +38,8 @@
 (define (lookup-var x vars)
   (let ((match (assoc x vars)))
     (if (not match)
-        (error "unbound variable")
+        (error "lookup-var: unbound variable")
         (cdr match))))
 
+(trace interp apply-func add-var lookup-var)
 
